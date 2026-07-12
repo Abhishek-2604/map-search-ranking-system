@@ -1,4 +1,4 @@
-# Wayfinder — Map Search Ranking with Learning to Rank (real data, live search)
+# Wayfinder - Map Search Ranking with Learning to Rank (real data, live search)
 
 A small end-to-end project: train a **LambdaMART** learning-to-rank model over
 a **real restaurant dataset**, then let people type **real search queries**
@@ -21,7 +21,7 @@ map_search_ltr/
 ├── models/                         trained model (native + JSON + minimal JSON)
 ├── static/restaurants.json         real restaurant catalog, UI-ready
 ├── ui_template.html                UI source (placeholders for injected data)
-└── index.html                       the finished, self-contained demo — open this
+└── index.html                       the finished, self-contained demo - open this
 ```
 
 ## What's real vs. simulated
@@ -30,7 +30,7 @@ map_search_ltr/
 |---|---|
 | Restaurant names, GPS coordinates, cuisines, prices, weekly hours | **Real.** UCI "Restaurant & Consumer Data" (Vargas-Govea et al., 2011), San Luis Potosí, Mexico. |
 | Star ratings, review counts | **Real.** Aggregated from real diners' real ratings in the same dataset. |
-| Search queries and relevance labels used to *train* the ranker | **Simulated.** No public query-log dataset exists for this restaurant catalog, so training sessions (user location, query, relevance judgment) are generated the same way a company would bootstrap a ranker before it has click logs — see `generate_sessions.py`. |
+| Search queries and relevance labels used to *train* the ranker | **Simulated.** No public query-log dataset exists for this restaurant catalog, so training sessions (user location, query, relevance judgment) are generated the same way a company would bootstrap a ranker before it has click logs - see `generate_sessions.py`. |
 | The query *you* type into the demo | **Real, yours.** Matched live against the real names/cuisines. |
 
 ## Run it yourself
@@ -52,11 +52,11 @@ tpl = open('ui_template.html', encoding='utf-8').read()
 open('index.html','w',encoding='utf-8').write(tpl.replace('__MODEL_JSON__', model).replace('__RESTAURANT_JSON__', restaurants))
 "
 ```
-Or just open the pre-built `index.html` directly — no server needed.
+Or just open the pre-built `index.html` directly - no server needed.
 
 ## The algorithm: LambdaMART
 
-`train.py` trains **LambdaMART** — gradient-boosted trees (LightGBM's
+`train.py` trains **LambdaMART** - gradient-boosted trees (LightGBM's
 `LGBMRanker`, `objective="lambdarank"`) with a pairwise/listwise ranking loss:
 it learns from pairs of candidates *within the same query* ("A should outrank
 B") with gradients weighted by how much swapping them would change NDCG.
@@ -65,23 +65,23 @@ relevance. Rows are grouped by `query_id`, split by query (not row) to avoid
 leakage, and evaluated with NDCG@3/5/10 on held-out queries.
 
 Result: **NDCG@5 ≈ 0.955**. `text_match` and `rating` dominate feature
-importance, followed by `is_open` and `distance_km` — sensible for a
+importance, followed by `is_open` and `distance_km` - sensible for a
 restaurant search ranker.
 
 ## The UI (`index.html`)
 
 Trained trees are stripped to `{split_feature, threshold, children,
-leaf_value}` and a small JS function walks them and sums leaf values — real
+leaf_value}` and a small JS function walks them and sums leaf values - real
 model inference in the browser, not a mock.
 
 - **Type any real search** ("tacos", "pizza", "bar", "breakfast", a
-  restaurant's own name…) — the query is matched live against each
+  restaurant's own name…) - the query is matched live against each
   restaurant's real name and cuisine tags to produce a `text_match` feature,
   exactly like the `text_match` feature the model was trained on.
-- **Pick a time of day** (Morning / Lunch / Dinner / Late night) — "open now"
+- **Pick a time of day** (Morning / Lunch / Dinner / Late night) - "open now"
   is computed from each restaurant's real weekly hours for *today's* actual
   weekday, so closed places get pushed down or greyed out live.
-- Results **re-rank with a FLIP animation** as you type (debounced ~120ms) —
+- Results **re-rank with a FLIP animation** as you type (debounced ~120ms) -
   cards and map pins smoothly slide to their new position rather than
   jumping, so you can see the ranking change happen rather than just the
   end state.
@@ -89,16 +89,6 @@ model inference in the browser, not a mock.
   during training.
 
 This version is intentionally minimal: no filter sliders, no ranking-mode
-toggle — the model handles the tradeoffs, and the only inputs are a real
+toggle - the model handles the tradeoffs, and the only inputs are a real
 search box and a time-of-day picker.
 
-## Ideas to extend
-
-- Add more real signal: parking/accessibility/ambience fields already exist
-  in the raw UCI data but aren't used yet.
-- Try `objective="rank_xendcg"` or a neural ranker and compare NDCG.
-- If you ever get real click logs for a catalog like this, swap
-  `generate_sessions.py`'s simulated labels for real position-bias-corrected
-  click data.
-- Add a second real city from the same dataset (Cuernavaca has 16 restaurants)
-  and let people switch between them.
