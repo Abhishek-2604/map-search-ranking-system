@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Wayfinder — Real-Data Map Search, Live Learning-to-Rank</title>
+<title>Wayfinder: Real-Data Map Search, Live Learning-to-Rank</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -118,7 +118,7 @@
       <div class="brand-mark"><span></span></div>
       <div>
         <h1>Wayfinder</h1>
-        <div class="tagline">type a real search — a real learning-to-rank model ranks 70 real restaurants live</div>
+        <div class="tagline">type a real search - a real learning-to-rank model ranks 70 real restaurants live</div>
       </div>
     </div>
     <div class="data-badge">
@@ -162,11 +162,11 @@
   </div>
 
   <div class="footnote">
-    <b>How this works:</b> the 70 restaurants — names, GPS coordinates, cuisines, prices, opening hours, and
-    star ratings — are <b>real</b>, from the UCI "Restaurant &amp; Consumer Data" set (San Luis Potosí, Mexico).
+    <b>How this works:</b> the 70 restaurants - names, GPS coordinates, cuisines, prices, opening hours, and
+    star ratings - are <b>real</b>, from the UCI "Restaurant &amp; Consumer Data" set (San Luis Potosí, Mexico).
     A LightGBM <b>LambdaMART</b> model was trained offline on simulated search sessions over this real catalog
     (no public query-log data exists for it) and exported to this page, where a small JavaScript function walks
-    its 120 trees directly — every ranking below is genuine model inference. Your search text is matched against
+    its 120 trees directly - every ranking below is genuine model inference. Your search text is matched against
     each restaurant's real name and cuisine tags, distance is computed from real coordinates, and "open now" is
     read from each restaurant's real weekly hours for the time you pick above.
   </div>
